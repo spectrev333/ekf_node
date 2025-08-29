@@ -94,13 +94,14 @@ class EKF:
 
         z_pred = np.array([self.x[0], self.x[1], self.x[2]])
         y = z - z_pred
+        y[2] = wrap_angle(y[2])  # handle wrap around
         S = H @ self.P @ H.T + self.R_slam
         K = self.P @ H.T @ np.linalg.inv(S)
         self.x = self.x + K @ y
         I = np.eye(self.n)
         self.P = (I - K @ H) @ self.P
 
-        # normalize angle # TODO: do it ahead of update step too?
+        # normalize angle
         self.x[2] = wrap_angle(self.x[2])
 
         # nis
